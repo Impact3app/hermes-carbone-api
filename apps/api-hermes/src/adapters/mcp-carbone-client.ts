@@ -1,3 +1,5 @@
+import type { Json } from "../types/hermes-database.js";
+
 type FullProductPayload = {
   article_name: string;
   materials: Array<{ label: string; mass_kg: number }>;
@@ -10,8 +12,8 @@ type MpcResponse = {
   payload: FullProductPayload;
   response: {
     total_kgco2e: number;
-    breakdown: unknown[];
-    factors: unknown[];
+    breakdown: Json[];
+    factors: Json[];
   };
 };
 
