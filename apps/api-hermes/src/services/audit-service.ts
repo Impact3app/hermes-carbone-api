@@ -3,6 +3,9 @@ import type { EstimateRequest } from "../schemas/estimate.schema.js";
 import type { HermesDatabase, Json } from "../types/hermes-database.js";
 
 type HermesClient = SupabaseClient<HermesDatabase, "hermes">;
+type LooseClient = {
+  from: (table: string) => any;
+};
 
 type CreateRunParams = {
   requestId: string;
@@ -40,8 +43,13 @@ function assertHasData<T>(data: T | null, context: string): T {
   return data;
 }
 
+function asLooseClient(client: HermesClient): LooseClient {
+  return client as unknown as LooseClient;
+}
+
 export async function createEstimateRequest(client: HermesClient, input: EstimateRequest) {
-  const { data, error } = await client
+  const db = asLooseClient(client);
+  const { data, error } = await db
     .from("estimate_requests")
     .insert({
       article_name: input.article_name,
@@ -51,7 +59,7 @@ export async function createEstimateRequest(client: HermesClient, input: Estimat
       source_context: input.source_context as Json,
       status: "processing",
       unit_label: input.unit_label
-    } satisfies HermesDatabase["hermes"]["Tables"]["estimate_requests"]["Insert"])
+    })
     .select("id")
     .single();
 
@@ -91,7 +99,8 @@ export async function createEstimateInputs(client: HermesClient, requestId: stri
     return;
   }
 
-  const { error } = await client.from("estimate_inputs").insert(rows);
+  const db = asLooseClient(client);
+  const { error } = await db.from("estimate_inputs").insert(rows);
   assertNoError(error, "create estimate inputs failed");
 }
 
@@ -105,20 +114,22 @@ export async function createNormalizations(
     return;
   }
 
+  const db = asLooseClient(client);
   const row = {
     request_id: requestId,
     source_value: sourceValue,
     normalized_value: normalizedValue,
     normalization_rule: "hermes_material_alias"
-  } satisfies HermesDatabase["hermes"]["Tables"]["estimate_normalizations"]["Insert"];
+  };
 
-  const { error } = await client.from("estimate_normalizations").insert(row);
+  const { error } = await db.from("estimate_normalizations").insert(row);
 
   assertNoError(error, "create normalization failed");
 }
 
 export async function createEstimateRun(client: HermesClient, params: CreateRunParams) {
-  const { data, error } = await client
+  const db = asLooseClient(client);
+  const { data, error } = await db
     .from("estimate_runs")
     .insert({
       attempt_no: params.attemptNo,
@@ -131,7 +142,7 @@ export async function createEstimateRun(client: HermesClient, params: CreateRunP
       status: params.status,
       tool_name: params.toolName,
       tool_priority: params.toolPriority
-    } satisfies HermesDatabase["hermes"]["Tables"]["estimate_runs"]["Insert"])
+    })
     .select("id")
     .single();
 
@@ -140,42 +151,36 @@ export async function createEstimateRun(client: HermesClient, params: CreateRunP
 }
 
 export async function saveEstimateResult(client: HermesClient, params: SaveResultParams) {
+  const db = asLooseClient(client);
   const resultRow = {
     request_id: params.requestId,
     emission_per_unit_kgco2e: params.emissionPerUnitKgco2e,
     total_emission_tco2e: params.totalEmissionTco2e ?? null,
     confidence_level: params.confidenceLevel,
     quality_score_global: params.qualityScoreGlobal
-  } satisfies HermesDatabase["hermes"]["Tables"]["estimate_results"]["Insert"];
+  };
 
-  const { error: resultError } = await client.from("estimate_results").insert(resultRow);
+  const { error: resultError } = await db.from("estimate_results").insert(resultRow);
   assertNoError(resultError, "save estimate result failed");
 
   const versionRow = {
     request_id: params.requestId,
     version_no: 1,
     rendered_payload: params.displayPayload
-  } satisfies HermesDatabase["hermes"]["Tables"]["estimate_versions"]["Insert"];
+  };
 
-  const { error: versionError } = await client.from("estimate_versions").insert(versionRow);
+  const { error: versionError } = await db.from("estimate_versions").insert(versionRow);
   assertNoError(versionError, "save estimate version failed");
 
-  const completedUpdate = {
-    status: "completed"
-  } satisfies HermesDatabase["hermes"]["Tables"]["estimate_requests"]["Update"];
-
-  const { error: requestError } = await client
+  const { error: requestError } = await db
     .from("estimate_requests")
-    .update(completedUpdate)
+    .update({ status: "completed" })
     .eq("id", params.requestId);
   assertNoError(requestError, "update request status failed");
 }
 
 export async function markEstimateFailed(client: HermesClient, requestId: string) {
-  const failedUpdate = {
-    status: "failed"
-  } satisfies HermesDatabase["hermes"]["Tables"]["estimate_requests"]["Update"];
-
-  const { error } = await client.from("estimate_requests").update(failedUpdate).eq("id", requestId);
+  const db = asLooseClient(client);
+  const { error } = await db.from("estimate_requests").update({ status: "failed" }).eq("id", requestId);
   assertNoError(error, "mark request failed failed");
 }
