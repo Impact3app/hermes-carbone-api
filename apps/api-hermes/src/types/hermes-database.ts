@@ -383,5 +383,8 @@ export type HermesDatabase = {
         };
       };
     };
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 };
