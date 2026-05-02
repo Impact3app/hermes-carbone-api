@@ -3,6 +3,6 @@ import type { HermesDatabase } from "../types/hermes-database.js";
 
 declare module "fastify" {
   interface FastifyInstance {
-    supabase: SupabaseClient<HermesDatabase>;
+    supabase: SupabaseClient<HermesDatabase, "hermes">;
   }
 }

@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EstimateRequest } from "../schemas/estimate.schema.js";
 import type { HermesDatabase, Json } from "../types/hermes-database.js";
 
-type HermesClient = SupabaseClient<HermesDatabase>;
+type HermesClient = SupabaseClient<HermesDatabase, "hermes">;
 
 type CreateRunParams = {
   requestId: string;
