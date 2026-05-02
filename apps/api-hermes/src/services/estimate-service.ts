@@ -49,7 +49,7 @@ function buildDisplayPayload(input: EstimateRequest) {
   };
 }
 
-export async function runEstimate(client: SupabaseClient<HermesDatabase, "hermes">, input: EstimateRequest) {
+export async function runEstimate(client: SupabaseClient<HermesDatabase>, input: EstimateRequest) {
   const requestId = await createEstimateRequest(client, input);
   await createEstimateInputs(client, requestId, input);
 
