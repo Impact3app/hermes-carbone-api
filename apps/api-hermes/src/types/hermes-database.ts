@@ -55,6 +55,7 @@ export type HermesDatabase = {
           unit_label: string;
           updated_at: string;
         }>;
+        Relationships: [];
       };
       estimate_inputs: {
         Row: {
@@ -89,6 +90,7 @@ export type HermesDatabase = {
           value_num: number | null;
           value_text: string | null;
         }>;
+        Relationships: [];
       };
       estimate_normalizations: {
         Row: {
@@ -114,6 +116,7 @@ export type HermesDatabase = {
           request_id: string;
           source_value: string;
         }>;
+        Relationships: [];
       };
       estimate_runs: {
         Row: {
@@ -154,6 +157,7 @@ export type HermesDatabase = {
           tool_name: string;
           tool_priority: number;
         }>;
+        Relationships: [];
       };
       estimate_results: {
         Row: {
@@ -182,6 +186,7 @@ export type HermesDatabase = {
           request_id: string;
           total_emission_tco2e: number | null;
         }>;
+        Relationships: [];
       };
       estimate_factors: {
         Row: {
@@ -222,6 +227,7 @@ export type HermesDatabase = {
           request_id: string;
           run_id: string | null;
         }>;
+        Relationships: [];
       };
       estimate_breakdown: {
         Row: {
@@ -262,6 +268,7 @@ export type HermesDatabase = {
           quality_score: "A" | "B" | "C" | "D" | "E";
           request_id: string;
         }>;
+        Relationships: [];
       };
       estimate_assumptions: {
         Row: {
@@ -284,6 +291,7 @@ export type HermesDatabase = {
           request_id: string;
           to_confirm: boolean;
         }>;
+        Relationships: [];
       };
       estimate_versions: {
         Row: {
@@ -303,6 +311,7 @@ export type HermesDatabase = {
           request_id: string;
           version_no: number;
         }>;
+        Relationships: [];
       };
       estimate_feedback: {
         Row: {
@@ -325,6 +334,7 @@ export type HermesDatabase = {
           feedback_type: "correction" | "validation" | "comment";
           request_id: string;
         }>;
+        Relationships: [];
       };
       factor_aliases: {
         Row: {
@@ -347,6 +357,7 @@ export type HermesDatabase = {
           normalized_label: string;
           raw_label: string;
         }>;
+        Relationships: [];
       };
       factor_catalog_cache: {
         Row: {
@@ -381,6 +392,7 @@ export type HermesDatabase = {
           is_active: boolean;
           source_payload: Json;
         }>;
+        Relationships: [];
       };
     };
     Views: {
