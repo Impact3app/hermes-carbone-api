@@ -13,6 +13,8 @@ import { normalizeMaterialLabel } from "./normalization-service.js";
 import { resolveConfidenceLevel } from "./scoring-service.js";
 import type { HermesDatabase } from "../types/hermes-database.js";
 
+type HermesClient = SupabaseClient<HermesDatabase, "hermes">;
+
 function buildDisplayPayload(input: EstimateRequest) {
   return {
     ce_que_j_ai_compris: `Estimation carbone pour ${input.article_name}.`,
@@ -49,7 +51,7 @@ function buildDisplayPayload(input: EstimateRequest) {
   };
 }
 
-export async function runEstimate(client: SupabaseClient<HermesDatabase>, input: EstimateRequest) {
+export async function runEstimate(client: HermesClient, input: EstimateRequest) {
   const requestId = await createEstimateRequest(client, input);
   await createEstimateInputs(client, requestId, input);
 
