@@ -9,7 +9,7 @@ export function createSupabaseServerClient() {
     throw new Error("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing");
   }
 
-  return createClient<HermesDatabase>(url, key, {
+  return createClient<HermesDatabase, "hermes">(url, key, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
